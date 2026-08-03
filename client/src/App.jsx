@@ -1,8 +1,8 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 
-import Login from "./pages/auth/Login";
-import Register from "./pages/auth/Register";
-import Onboarding from "./pages/onboarding/Onboarding";
+import Login from "./pages/Auth/Login";
+import Register from "./pages/Auth/Register";
+import Onboarding from "./pages/Onboarding/Onboarding";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
 function App() {
