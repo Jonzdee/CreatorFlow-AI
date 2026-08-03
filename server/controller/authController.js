@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import generateToken from "../utils/generateToken.js";
 
 export const registerUser = async (req, res) => {
 
@@ -30,10 +31,12 @@ export const registerUser = async (req, res) => {
             password: hashedPassword,
             niche
         });
+        const token = generateToken(user._id);
 
         res.status(201).json({
             success: true,
             message: "User registered successfully",
+            token,
             user: {
                 id: user._id,
                 name: user.name,
@@ -66,7 +69,7 @@ export const loginUser = async (req, res) => {
 
         }
 
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email }).select("+password");
 
         if (!user) {
 
@@ -86,20 +89,8 @@ export const loginUser = async (req, res) => {
 
         }
 
-        const token = jwt.sign(
-
-            {
-                id: user._id
-            },
-
-            process.env.JWT_SECRET,
-
-            {
-                expiresIn: "7d"
-            }
-
-        );
-
+        const token = generateToken(user._id);
+        
         res.status(200).json({
 
             success: true,
