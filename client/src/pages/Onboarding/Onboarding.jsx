@@ -3,6 +3,13 @@ import Card from "../../components/common/Card";
 import ProgressBar from "../../components/common/ProgressBar";
 import WelcomeStep from "../../components/onboarding/WelcomeStep";
 import NicheStep from "../../components/onboarding/NicheStep";
+import PlatformStep from "../../components/onboarding/PlatformStep";
+import PrimaryPlatformStep from "../../components/onboarding/PrimaryPlatformStep";
+import GoalsStep from "../../components/onboarding/GoalsStep";
+import WritingStyleStep from "../../components/onboarding/WritingStyleStep";
+import LocationStep from "../../components/onboarding/LocationStep";
+import PostingPreferenceStep from "../../components/onboarding/PostingPreferenceStep";
+import BrandVoiceStep from "../../components/onboarding/BrandVoiceStep";
 
 const TOTAL_STEPS = 9;
 
@@ -14,7 +21,7 @@ const Onboarding = () => {
     platforms: [],
     primaryPlatform: "",
     goals: [],
-    writingStyle: "Friendly",
+    writingStyle: "",
     country: "",
     timezone: "",
     postingFrequency: "",
@@ -26,6 +33,16 @@ const Onboarding = () => {
   const progress = Math.round((step / TOTAL_STEPS) * 100);
 
   const nextStep = () => {
+    if (step === 2 && !formData.niche) {
+      alert("Please select your niche.");
+      return;
+    }
+
+    if (step === 3 && formData.platforms.length === 0) {
+      alert("Please select at least one platform.");
+      return;
+    }
+
     if (step < TOTAL_STEPS) {
       setStep((prev) => prev + 1);
     }
@@ -54,13 +71,61 @@ const Onboarding = () => {
         previousStep={previousStep}
       />
     ),
-    3: <div>Platform Step</div>,
-    4: <div>Primary Platform Step</div>,
-    5: <div>Goals Step</div>,
-    6: <div>Writing Style Step</div>,
-    7: <div>Location Step</div>,
-    8: <div>Posting Preferences Step</div>,
-    9: <div>Finish Step</div>,
+    3: (
+      <PlatformStep
+        formData={formData}
+        updateFormData={updateFormData}
+        nextStep={nextStep}
+        previousStep={previousStep}
+      />
+    ),
+    4: (
+      <PrimaryPlatformStep
+        formData={formData}
+        updateFormData={updateFormData}
+        nextStep={nextStep}
+        previousStep={previousStep}
+      />
+    ),
+    5: (
+      <GoalsStep
+        formData={formData}
+        updateFormData={updateFormData}
+        nextStep={nextStep}
+        previousStep={previousStep}
+      />
+    ),
+    6: (
+      <WritingStyleStep
+        formData={formData}
+        updateFormData={updateFormData}
+        nextStep={nextStep}
+        previousStep={previousStep}
+      />
+    ),
+    7: (
+      <LocationStep
+        formData={formData}
+        updateFormData={updateFormData}
+        nextStep={nextStep}
+        previousStep={previousStep}
+      />
+    ),
+    8: (
+      <PostingPreferenceStep
+        formData={formData}
+        updateFormData={updateFormData}
+        nextStep={nextStep}
+        previousStep={previousStep}
+      />
+    ),
+    9: (
+      <BrandVoiceStep
+        formData={formData}
+        updateFormData={updateFormData}
+        previousStep={previousStep}
+      />
+    ),
   };
 
   return (

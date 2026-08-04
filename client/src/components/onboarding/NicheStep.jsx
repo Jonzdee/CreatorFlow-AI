@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import Button from "../common/Button";
 import SelectableCard from "../common/SelectableCard";
 import { NICHES } from "../../constants/niches";
+import StepNavigation from "./StepNavigation";
 
 const NicheStep = ({ formData, updateFormData, nextStep, previousStep }) => {
   const [error, setError] = useState(false);
@@ -68,29 +69,11 @@ const NicheStep = ({ formData, updateFormData, nextStep, previousStep }) => {
         </p>
       )}
 
-      <div className="flex items-center justify-between gap-2 sm:gap-3 mt-7 sm:mt-10">
-        <Button
-          variant="outline"
-          icon={ArrowLeft}
-          fullWidth={false}
-          size="md"
-          onClick={previousStep}
-          className="px-4 sm:px-6 shrink-0"
-        >
-          Back
-        </Button>
-
-        <Button
-          icon={ArrowRight}
-          iconPosition="right"
-          fullWidth={false}
-          size="md"
-          onClick={handleNext}
-          className="px-5 sm:px-8 flex-1 sm:flex-initial max-w-55"
-        >
-          Continue
-        </Button>
-      </div>
+      <StepNavigation
+        onBack={previousStep}
+        onNext={handleNext}
+        nextDisabled={!formData.niche}
+      />
     </motion.div>
   );
 };
