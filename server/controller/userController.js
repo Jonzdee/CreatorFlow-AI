@@ -22,11 +22,12 @@ export const completeOnboarding = async (req, res) => {
         });
 
     } catch (error) {
+        console.error("Validation Error:", error);
 
-        res.status(500).json({
+        return res.status(400).json({
             success: false,
             message: error.message,
+            errors: error.errors,
         });
-
     }
 };
