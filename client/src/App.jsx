@@ -4,7 +4,7 @@ import Login from "./pages/Auth/Login";
 import Register from "./pages/Auth/Register";
 import Onboarding from "./pages/Onboarding/Onboarding";
 import ProtectedRoute from "./routes/ProtectedRoute";
-
+import OnboardingComplete from "./pages/onboarding/OnboardingComplete";
 function App() {
   return (
     <Routes>
@@ -22,6 +22,7 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route path="/onboarding-complete" element={<OnboardingComplete />} />
     </Routes>
   );
 }

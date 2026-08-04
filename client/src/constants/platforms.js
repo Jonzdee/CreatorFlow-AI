@@ -1,26 +1,26 @@
 export const PLATFORMS = [
     {
-        id: "facebook",
+        id: "Facebook",
         name: "Facebook",
     },
     {
-        id: "instagram",
+        id: "Instagram",
         name: "Instagram",
     },
     {
-        id: "tiktok",
+        id: "Tiktok",
         name: "TikTok",
     },
     {
-        id: "linkedin",
+        id: "Linkedin",
         name: "LinkedIn",
     },
     {
-        id: "x",
+        id: "X",
         name: "X (Twitter)",
     },
     {
-        id: "youtube",
+        id: "Youtube",
         name: "YouTube",
     },
 ];

@@ -1,17 +1,17 @@
 export const POSTING_FREQUENCIES = [
     {
-        id: "daily",
+        id: "Daily",
         title: "Daily",
         description: "Post every day",
     },
     {
-        id: "weekly",
-        title: "Weekly",
-        description: "A few times per week",
+        id: "3 Times Weekly",
+        title: "3 Times Weekly",
+        description: "Three posts every week",
     },
     {
-        id: "monthly",
-        title: "Monthly",
-        description: "Only a few times each month",
+        id: "Weekly",
+        title: "Weekly",
+        description: "One post every week",
     },
 ];

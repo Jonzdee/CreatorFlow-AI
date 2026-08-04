@@ -1,26 +1,37 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import StepNavigation from "./StepNavigation";
 import { completeOnboarding } from "../../services/userService";
 
 const BrandVoiceStep = ({ formData, updateFormData, previousStep }) => {
+    const navigate = useNavigate();
+
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async () => {
-    try {
-      setLoading(true);
+const handleSubmit = async () => {
+  try {
+    setLoading(true);
 
-      await completeOnboarding(formData);
+    console.log("Submitting onboarding...");
 
-      window.location.href = "/dashboard";
-    } catch (error) {
-      console.error(error);
+    const response = console.log("Submitting:", formData);
 
-      alert(error.response?.data?.message || "Unable to complete onboarding.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    await completeOnboarding(formData);
+
+    console.log("API Success:", response);
+
+    console.log("Navigating to completion page...");
+
+    navigate("/onboarding-complete");
+  } catch (error) {
+    console.error("API Error:", error);
+
+    alert(error.response?.data?.message || "Unable to complete onboarding.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <motion.div

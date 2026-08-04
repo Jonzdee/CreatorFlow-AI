@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Card from "../../components/common/Card";
 import ProgressBar from "../../components/common/ProgressBar";
 import WelcomeStep from "../../components/onboarding/WelcomeStep";
@@ -10,28 +10,43 @@ import WritingStyleStep from "../../components/onboarding/WritingStyleStep";
 import LocationStep from "../../components/onboarding/LocationStep";
 import PostingPreferenceStep from "../../components/onboarding/PostingPreferenceStep";
 import BrandVoiceStep from "../../components/onboarding/BrandVoiceStep";
+import StepHeader from "../../components/onboarding/StepHeader";
+import ProgressTracker from "../../components/onboarding/ProgressTracker";
 
 const TOTAL_STEPS = 9;
 
 const Onboarding = () => {
-  const [step, setStep] = useState(1);
-
-  const [formData, setFormData] = useState({
-    niche: "",
-    platforms: [],
-    primaryPlatform: "",
-    goals: [],
-    writingStyle: "",
-    country: "",
-    timezone: "",
-    postingFrequency: "",
-    preferredPostingTime: "",
-    weeklyContentTime: 0,
-    brandVoice: "",
+  const [step, setStep] = useState(() => {
+    return Number(localStorage.getItem("creatorflow_step")) || 1;
   });
+useEffect(() => {
+  localStorage.setItem("creatorflow_step", step);
+}, [step]);
 
-  const progress = Math.round((step / TOTAL_STEPS) * 100);
+  const [formData, setFormData] = useState(() => {
+    const saved = localStorage.getItem("creatorflow_onboarding");
 
+    return saved
+      ? JSON.parse(saved)
+      : {
+          niche: "",
+          platforms: [],
+          primaryPlatform: "",
+          goals: [],
+          writingStyle: "",
+          country: "",
+          timezone: "",
+          postingFrequency: "",
+          preferredPostingTime: "",
+          weeklyContentTime: 0,
+          brandVoice: "",
+        };
+  });
+useEffect(() => {
+  localStorage.setItem("creatorflow_onboarding", JSON.stringify(formData));
+}, [formData]);
+
+ 
   const nextStep = () => {
     if (step === 2 && !formData.niche) {
       alert("Please select your niche.");
@@ -136,11 +151,8 @@ const Onboarding = () => {
       }}
     >
       <Card className="w-full max-w-lg my-auto">
-        <ProgressBar progress={progress} />
-
-        <p className="text-center text-sm text-[#6B7280] mt-3 sm:mt-4">
-          Step {step} of {TOTAL_STEPS}
-        </p>
+        <ProgressTracker currentStep={step} totalSteps={TOTAL_STEPS} />
+        <StepHeader step={step} totalSteps={TOTAL_STEPS} />
 
         <div className="mt-6 sm:mt-8">{steps[step]}</div>
       </Card>

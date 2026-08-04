@@ -1,26 +1,26 @@
 export const WRITING_STYLES = [
     {
-        id: "friendly",
+        id: "Friendly",
         title: "Friendly",
         description: "Warm, conversational and approachable.",
     },
     {
-        id: "professional",
+        id: "Professional",
         title: "Professional",
         description: "Clear, polished and business-focused.",
     },
     {
-        id: "educational",
+        id: "Educational",
         title: "Educational",
         description: "Teach and explain concepts simply.",
     },
     {
-        id: "humorous",
+        id: "Humorous",
         title: "Humorous",
         description: "Fun, entertaining and engaging.",
     },
     {
-        id: "inspirational",
+        id: "Inspirational",
         title: "Inspirational",
         description: "Motivate and encourage your audience.",
     },
