@@ -65,7 +65,7 @@ const Onboarding = () => {
 
   return (
     <div
-      className="min-h-[100dvh] w-full bg-[#F8FAFC] flex items-start sm:items-center justify-center overflow-y-auto px-4 pb-6"
+      className="min-h-dvh w-full bg-[#F8FAFC] flex items-start sm:items-center justify-center overflow-y-auto px-4 pb-6"
       style={{
         paddingTop: "max(1.5rem, calc(env(safe-area-inset-top) + 1rem))",
       }}

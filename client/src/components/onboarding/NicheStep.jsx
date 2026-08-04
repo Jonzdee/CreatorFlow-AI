@@ -75,7 +75,7 @@ const NicheStep = ({ formData, updateFormData, nextStep, previousStep }) => {
           fullWidth={false}
           size="md"
           onClick={previousStep}
-          className="px-4 sm:px-6 flex-shrink-0"
+          className="px-4 sm:px-6 shrink-0"
         >
           Back
         </Button>
@@ -86,7 +86,7 @@ const NicheStep = ({ formData, updateFormData, nextStep, previousStep }) => {
           fullWidth={false}
           size="md"
           onClick={handleNext}
-          className="px-5 sm:px-8 flex-1 sm:flex-initial max-w-[220px]"
+          className="px-5 sm:px-8 flex-1 sm:flex-initial max-w-55"
         >
           Continue
         </Button>

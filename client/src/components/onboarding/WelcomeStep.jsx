@@ -19,7 +19,7 @@ const WelcomeStep = ({ nextStep }) => {
     >
       {/* Icon */}
       <div className="flex justify-center mb-5 sm:mb-6">
-        <div className="bg-gradient-to-br from-[#EC4899]/10 via-[#A855F7]/10 to-[#7C3AED]/10 p-3.5 sm:p-4 rounded-full">
+        <div className="bg-linear-to-br from-[#EC4899]/10 via-[#A855F7]/10 to-[#7C3AED]/10 p-3.5 sm:p-4 rounded-full">
           <Sparkles className="w-8 h-8 sm:w-10 sm:h-10 text-[#7C3AED]" />
         </div>
       </div>

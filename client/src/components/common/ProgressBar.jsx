@@ -45,7 +45,7 @@ const ProgressBar = ({
         className={`w-full bg-[#E5E7EB] rounded-full overflow-hidden ${heights[size]}`}
       >
         <div
-          className={`${heights[size]} rounded-full bg-gradient-to-r from-[#EC4899] via-[#A855F7] to-[#7C3AED] transition-[width] duration-500 ease-out motion-reduce:transition-none`}
+          className={`${heights[size]} rounded-full bg-linear-to-r from-[#EC4899] via-[#A855F7] to-[#7C3AED] transition-[width] duration-500 ease-out motion-reduce:transition-none`}
           style={{ width: `${clamped}%` }}
         />
       </div>
