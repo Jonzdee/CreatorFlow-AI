@@ -15,7 +15,7 @@ app.use(
     cors({
         origin: [
             "http://localhost:5173",
-            "https://your-app.vercel.app",
+            "https://creatorflowai.vercel.app/",
         ],
         credentials: true,
     })
