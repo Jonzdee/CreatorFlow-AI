@@ -15,11 +15,15 @@ app.use(
     cors({
         origin: [
             "http://localhost:5173",
-            "https://creatorflowai.vercel.app/",
+            "https://creatorflowai.vercel.app",
         ],
         credentials: true,
     })
 );
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.originalUrl}`);
+    next();
+});
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
