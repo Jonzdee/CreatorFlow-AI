@@ -23,24 +23,20 @@ const Onboarding = () => {
     brandVoice: "",
   });
 
-  // Progress
   const progress = Math.round((step / TOTAL_STEPS) * 100);
 
-  // Go to next step
   const nextStep = () => {
     if (step < TOTAL_STEPS) {
       setStep((prev) => prev + 1);
     }
   };
 
-  // Go to previous step
   const previousStep = () => {
     if (step > 1) {
       setStep((prev) => prev - 1);
     }
   };
 
-  // Update form data
   const updateFormData = (field, value) => {
     setFormData((prev) => ({
       ...prev,
@@ -48,17 +44,16 @@ const Onboarding = () => {
     }));
   };
 
-  // Render onboarding steps
   const steps = {
     1: <WelcomeStep nextStep={nextStep} />,
-
-    // We'll build these next
-    2: <NicheStep
-      formData={formData}
-      updateFormData={updateFormData}
-      nextStep={nextStep}
-      previousStep={previousStep}
-    />,
+    2: (
+      <NicheStep
+        formData={formData}
+        updateFormData={updateFormData}
+        nextStep={nextStep}
+        previousStep={previousStep}
+      />
+    ),
     3: <div>Platform Step</div>,
     4: <div>Primary Platform Step</div>,
     5: <div>Goals Step</div>,
@@ -69,15 +64,20 @@ const Onboarding = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-lg">
+    <div
+      className="min-h-[100dvh] w-full bg-[#F8FAFC] flex items-start sm:items-center justify-center overflow-y-auto px-4 pb-6"
+      style={{
+        paddingTop: "max(1.5rem, calc(env(safe-area-inset-top) + 1rem))",
+      }}
+    >
+      <Card className="w-full max-w-lg my-auto">
         <ProgressBar progress={progress} />
 
-        <p className="text-center text-sm text-gray-500 mt-4">
+        <p className="text-center text-sm text-[#6B7280] mt-3 sm:mt-4">
           Step {step} of {TOTAL_STEPS}
         </p>
 
-        <div className="mt-8">{steps[step]}</div>
+        <div className="mt-6 sm:mt-8">{steps[step]}</div>
       </Card>
     </div>
   );
