@@ -25,9 +25,10 @@ const handleSubmit = async () => {
 
     navigate("/onboarding-complete");
   } catch (error) {
-    console.error("API Error:", error);
+    console.error("Status:", error.response?.status);
+    console.error("Response:", error.response?.data);
 
-    alert(error.response?.data?.message || "Unable to complete onboarding.");
+    alert(JSON.stringify(error.response?.data, null, 2));
   } finally {
     setLoading(false);
   }

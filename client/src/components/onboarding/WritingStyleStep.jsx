@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 
 import StepNavigation from "./StepNavigation";
-import { WRITING_STYLES } from "../../constants/writingStyles";
+import { WRITING_STYLE_OPTIONS } from "../../../../shared/writingStyles";
 
 const WritingStyleStep = ({
   formData,
@@ -42,7 +42,7 @@ const WritingStyleStep = ({
       </p>
 
       <div className="space-y-3">
-        {WRITING_STYLES.map((style) => {
+        {WRITING_STYLE_OPTIONS.map((style) => {
           const selected = formData.writingStyle === style.id;
 
           return (

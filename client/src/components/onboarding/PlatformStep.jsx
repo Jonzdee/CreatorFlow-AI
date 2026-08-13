@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import StepNavigation from "./StepNavigation";
-import { PLATFORMS } from "../../constants/platforms";
+import { PLATFORM_OPTIONS } from "../../../../shared/platforms";
 
 const PlatformStep = ({ formData, updateFormData, nextStep, previousStep }) => {
   const [error, setError] = useState(false);
@@ -49,7 +49,7 @@ const PlatformStep = ({ formData, updateFormData, nextStep, previousStep }) => {
         aria-label="Select your platforms"
         className="space-y-2.5 sm:space-y-3"
       >
-        {PLATFORMS.map((platform) => {
+        {PLATFORM_OPTIONS.map((platform) => {
           const selected = formData.platforms.includes(platform.id);
           const Icon = platform.icon;
 

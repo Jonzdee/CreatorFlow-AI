@@ -3,7 +3,8 @@ import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Button from "../common/Button";
 import SelectableCard from "../common/SelectableCard";
-import { NICHES } from "../../constants/niches";
+import { NICHES } from "../../../../shared/niches.js";
+import { NICHE_ICONS } from "../../constants/nicheIcons.js";
 import StepNavigation from "./StepNavigation";
 
 const NicheStep = ({ formData, updateFormData, nextStep, previousStep }) => {
@@ -43,22 +44,17 @@ const NicheStep = ({ formData, updateFormData, nextStep, previousStep }) => {
         className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4"
       >
         {NICHES.map((niche) => {
-          const Icon = niche.icon;
+          const Icon = NICHE_ICONS[niche.id];
 
           return (
-            <div
-              key={niche.title}
-              role="radio"
-              aria-checked={formData.niche === niche.title}
-            >
-              <SelectableCard
-                title={niche.title}
-                description={niche.description}
-                icon={<Icon size={28} />}
-                selected={formData.niche === niche.title}
-                onClick={() => handleSelect(niche.title)}
-              />
-            </div>
+            <SelectableCard
+              key={niche.id}
+              title={niche.title}
+              description={niche.description}
+              icon={<Icon size={28} />}
+              selected={formData.niche === niche.id}
+              onClick={() => handleSelect(niche.id)}
+            />
           );
         })}
       </div>

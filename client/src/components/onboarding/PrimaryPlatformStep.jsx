@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 
 import StepNavigation from "./StepNavigation";
-import { PLATFORMS } from "../../constants/platforms";
+import { PLATFORM_OPTIONS } from "../../../../shared/index.js";
 
 const PrimaryPlatformStep = ({
   formData,
@@ -14,7 +14,7 @@ const PrimaryPlatformStep = ({
   const [error, setError] = useState(false);
 
   // Only show platforms selected in Step 2
-  const selectedPlatforms = PLATFORMS.filter((platform) =>
+  const selectedPlatforms = PLATFORM_OPTIONS.filter((platform) =>
     formData.platforms.includes(platform.id),
   );
 

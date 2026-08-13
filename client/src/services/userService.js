@@ -17,3 +17,17 @@ export const completeOnboarding = async (data) => {
 
     return response.data;
 };
+export const getCurrentUser = async () => {
+    const token = localStorage.getItem("token");
+
+    const response = await axios.get(
+        `${API_URL}/me`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+
+    return response.data;
+};

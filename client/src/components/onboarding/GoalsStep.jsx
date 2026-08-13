@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 
 import StepNavigation from "./StepNavigation";
-import { GOALS } from "../../constants/goals";
+import { GOAL_OPTIONS } from "../../../../shared/goals";
 
 const GoalsStep = ({ formData, updateFormData, nextStep, previousStep }) => {
   const [error, setError] = useState(false);
@@ -47,7 +47,7 @@ const GoalsStep = ({ formData, updateFormData, nextStep, previousStep }) => {
       </p>
 
       <div className="space-y-3">
-        {GOALS.map((goal) => {
+        {GOAL_OPTIONS.map((goal) => {
           const selected = formData.goals.includes(goal.id);
 
           return (
