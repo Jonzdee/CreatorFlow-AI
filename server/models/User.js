@@ -6,14 +6,12 @@ import {
     WRITING_STYLES,
     EXPERIENCE_LEVELS,
     POSTING_FREQUENCIES,
-} from "../constants/index.js";
+    NICHES,
+} from "../../shared/index.js";
 
 
 const userSchema = new mongoose.Schema(
     {
-        // ==========================
-        // Authentication
-        // ==========================
 
         name: {
             type: String,
@@ -48,17 +46,13 @@ const userSchema = new mongoose.Schema(
 
         niche: {
             type: String,
+            enum: [...NICHES, ""],
             default: "",
-            trim: true,
         },
 
         platforms: {
-            type: [
-                {
-                    type: String,
-                    enum: PLATFORMS,
-                },
-            ],
+            type: [String],
+            enum: PLATFORMS,
             default: [],
         },
 
@@ -103,12 +97,7 @@ const userSchema = new mongoose.Schema(
 
         postingFrequency: {
             type: String,
-            enum: [
-                "Daily",
-                "3 Times Weekly",
-                "Weekly",
-                null,
-            ],
+            enum: [...POSTING_FREQUENCIES, null],
             default: null,
         },
 

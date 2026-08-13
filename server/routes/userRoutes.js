@@ -1,5 +1,5 @@
 import express from "express";
-import { completeOnboarding } from "../controller/userController.js";
+import { completeOnboarding, getCurrentUser} from "../controller/userController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 import { validateOnboarding } from "../validators/onboardingValidator.js";
 
@@ -11,5 +11,9 @@ router.put(
     validateOnboarding,
     completeOnboarding
 );
-
+router.get(
+    "/me",
+    authMiddleware,
+    getCurrentUser
+);
 export default router;

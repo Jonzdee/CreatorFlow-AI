@@ -1,4 +1,9 @@
-import { PLATFORMS, GOALS } from "../constants/index.js";
+import {
+    PLATFORMS,
+    GOALS,
+    WRITING_STYLES,
+    POSTING_FREQUENCIES,
+} from "../../shared/index.js";
 
 export const validateOnboarding = (req, res, next) => {
     const {
@@ -6,14 +11,21 @@ export const validateOnboarding = (req, res, next) => {
         platforms,
         primaryPlatform,
         goals,
+        writingStyle,
         country,
         timezone,
+        postingFrequency,
+        preferredPostingTime,
         weeklyContentTime,
+        brandVoice,
     } = req.body;
 
     const errors = [];
 
+    // =========================
     // Required fields
+    // =========================
+
     if (!niche?.trim()) {
         errors.push("Niche is required.");
     }
@@ -38,19 +50,10 @@ export const validateOnboarding = (req, res, next) => {
         errors.push("Timezone is required.");
     }
 
-    // Business Rules
+    // =========================
+    // Platforms
+    // =========================
 
-    if (
-        primaryPlatform &&
-        Array.isArray(platforms) &&
-        !platforms.includes(primaryPlatform)
-    ) {
-        errors.push(
-            "Primary platform must be one of the selected platforms."
-        );
-    }
-
-    // Validate platform names
     if (Array.isArray(platforms)) {
         const invalidPlatforms = platforms.filter(
             (platform) => !PLATFORMS.includes(platform)
@@ -63,23 +66,28 @@ export const validateOnboarding = (req, res, next) => {
         }
     }
 
-    // Weekly Content Time
-    if (
-        weeklyContentTime !== undefined &&
-        (weeklyContentTime < 0 || weeklyContentTime > 168)
-    ) {
-        errors.push(
-            "Weekly content time must be between 0 and 168 hours."
-        );
+    // =========================
+    // Primary Platform
+    // =========================
+
+    if (primaryPlatform) {
+        if (!PLATFORMS.includes(primaryPlatform)) {
+            errors.push(`Invalid primary platform: ${primaryPlatform}`);
+        }
+
+        if (
+            Array.isArray(platforms) &&
+            !platforms.includes(primaryPlatform)
+        ) {
+            errors.push(
+                "Primary platform must be one of the selected platforms."
+            );
+        }
     }
 
-    if (errors.length > 0) {
-        return res.status(400).json({
-            success: false,
-            message: "Validation failed",
-            errors,
-        });
-    }
+    // =========================
+    // Goals
+    // =========================
 
     if (Array.isArray(goals)) {
         const invalidGoals = goals.filter(
@@ -91,6 +99,64 @@ export const validateOnboarding = (req, res, next) => {
                 `Invalid goal(s): ${invalidGoals.join(", ")}`
             );
         }
+    }
+
+    // =========================
+    // Writing Style
+    // =========================
+
+    if (
+        writingStyle &&
+        !WRITING_STYLES.includes(writingStyle)
+    ) {
+        errors.push(`Invalid writing style: ${writingStyle}`);
+    }
+
+    // =========================
+    // Posting Frequency
+    // =========================
+
+    if (
+        postingFrequency &&
+        !POSTING_FREQUENCIES.includes(postingFrequency)
+    ) {
+        errors.push(
+            `Invalid posting frequency: ${postingFrequency}`
+        );
+    }
+
+    // =========================
+    // Weekly Content Time
+    // =========================
+
+    if (
+        weeklyContentTime !== undefined &&
+        (Number(weeklyContentTime) < 0 ||
+            Number(weeklyContentTime) > 168)
+    ) {
+        errors.push(
+            "Weekly content time must be between 0 and 168 hours."
+        );
+    }
+
+    // =========================
+    // Brand Voice
+    // =========================
+
+    if (!brandVoice?.trim()) {
+        errors.push("Brand voice is required.");
+    }
+
+    // =========================
+    // Return errors
+    // =========================
+
+    if (errors.length > 0) {
+        return res.status(400).json({
+            success: false,
+            message: "Validation failed",
+            errors,
+        });
     }
 
     next();
