@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import StepNavigation from "./StepNavigation";
-import { PLATFORM_OPTIONS } from "../../../../shared/platforms";
+import { PLATFORMS, PLATFORM_OPTIONS } from "@shared/platforms.js";
 
 const PlatformStep = ({ formData, updateFormData, nextStep, previousStep }) => {
   const [error, setError] = useState(false);

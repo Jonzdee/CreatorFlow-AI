@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 
 import StepNavigation from "./StepNavigation";
-import { GOAL_OPTIONS } from "../../../../shared/goals";
+import { GOALS, GOAL_OPTIONS } from "@shared/goals.js";
 
 const GoalsStep = ({ formData, updateFormData, nextStep, previousStep }) => {
   const [error, setError] = useState(false);

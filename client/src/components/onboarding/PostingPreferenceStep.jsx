@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import StepNavigation from "./StepNavigation";
-import { POSTING_FREQUENCY_OPTIONS } from "../../../../shared/postingFrequencies";
+import { POSTING_FREQUENCIES } from "@shared/postingFrequencies.js";
 
 const PostingPreferenceStep = ({
   formData,
@@ -23,7 +23,7 @@ const PostingPreferenceStep = ({
       {/* Frequency */}
 
       <div className="space-y-3">
-        {POSTING_FREQUENCY_OPTIONS.map((item) => {
+        {POSTING_FREQUENCIES.map((item) => {
           const selected = formData.postingFrequency === item.id;
 
           return (

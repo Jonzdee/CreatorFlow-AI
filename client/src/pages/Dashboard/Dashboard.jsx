@@ -9,7 +9,7 @@ import {
 import { Link } from "react-router-dom";
 import useCurrentUser from "../../hooks/useCurrentUser";
 
-const { user } = useCurrentUser();
+
 
 const stats = [
   {
@@ -33,6 +33,12 @@ const stats = [
 ];
 
 const Dashboard = () => {
+    const { user, loading } = useCurrentUser();
+
+    if (loading) {
+      return <div>Loading...</div>;
+    }
+
   return (
     <div className="space-y-6 sm:space-y-8">
       {/* Welcome */}

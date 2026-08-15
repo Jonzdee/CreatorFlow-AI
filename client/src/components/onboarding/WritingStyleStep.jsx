@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 
 import StepNavigation from "./StepNavigation";
-import { WRITING_STYLE_OPTIONS } from "../../../../shared/writingStyles";
+import { WRITING_STYLE_OPTIONS } from "@shared/writingStyles.js";
 
 const WritingStyleStep = ({
   formData,

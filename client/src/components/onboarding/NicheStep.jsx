@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Button from "../common/Button";
 import SelectableCard from "../common/SelectableCard";
-import { NICHES } from "../../../../shared/niches.js";
+import { NICHES } from "@shared/niches.js";
 import { NICHE_ICONS } from "../../constants/nicheIcons.js";
 import StepNavigation from "./StepNavigation";
 
