@@ -3,12 +3,12 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Auth/Login";
 import Register from "./pages/Auth/Register";
 import Onboarding from "./pages/Onboarding/Onboarding";
-import OnboardingComplete from "./pages/onboarding/OnboardingComplete";
+import OnboardingComplete from "./pages/Onboarding/OnboardingComplete";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 
 import DashboardLayout from "./layouts/DashboardLayout";
-import Dashboard from "./pages/dashboard/Dashboard";
+import Dashboard from "./pages/Dashboard/Dashboard";
 
 function App() {
   return (
