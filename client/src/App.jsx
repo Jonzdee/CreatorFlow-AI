@@ -9,6 +9,7 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 
 import DashboardLayout from "./layouts/DashboardLayout";
 import Dashboard from "./pages/Dashboard/Dashboard";
+import CreateContent from "./pages/Dashboard/CreateContent";
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
         }
       >
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard/create" element={<CreateContent />} />
       </Route>
     </Routes>
   );
