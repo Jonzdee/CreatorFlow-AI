@@ -43,10 +43,14 @@ const Login = () => {
       setLoading(true);
 
       const response = await loginService(formData);
+console.log("Login user:", response.user);
+     login(response.user, response.token);
 
-      login(response.user, response.token);
-
-      navigate("/onboarding");
+     if (response.user?.onboardingCompleted) {
+       navigate("/dashboard");
+     } else {
+       navigate("/onboarding");
+     }
     } catch (error) {
       console.log(error.response?.data || error.message);
 

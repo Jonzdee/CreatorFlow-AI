@@ -1,33 +1,13 @@
-import axios from "axios";
-
-const API_URL = `${import.meta.env.VITE_API_URL}/users`;
+import api from "./api";
 
 export const completeOnboarding = async (data) => {
-    const token = localStorage.getItem("token");
-
-    const response = await axios.put(
-        `${API_URL}/onboarding`,
-        data,
-        {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        }
-    );
+    const response = await api.put("/users/onboarding", data);
 
     return response.data;
 };
-export const getCurrentUser = async () => {
-    const token = localStorage.getItem("token");
 
-    const response = await axios.get(
-        `${API_URL}/me`,
-        {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        }
-    );
+export const getCurrentUser = async () => {
+    const response = await api.get("/users/me");
 
     return response.data;
 };
