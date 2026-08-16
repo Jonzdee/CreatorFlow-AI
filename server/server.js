@@ -5,7 +5,7 @@ import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js"
 import userRoutes from "./routes/userRoutes.js";
 import contentRoutes from "./routes/contentRoutes.js";
-
+import notificationRoutes from "./routes/notificationRoutes.js";
 
 connectDB();
 
@@ -29,6 +29,8 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes); 
 app.use("/api/content", contentRoutes);
+
+app.use("/api/notifications", notificationRoutes);
 app.get("/", (req, res) => {
     res.send("🚀 CreatorFlow API Running");
 });
