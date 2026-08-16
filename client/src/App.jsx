@@ -10,6 +10,10 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import DashboardLayout from "./layouts/DashboardLayout";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import CreateContent from "./pages/Dashboard/CreateContent";
+import Content from "./pages/Dashboard/Content";
+import Calendar from "./pages/Dashboard/Calendar";
+import Analytics from "./pages/Dashboard/Analytics";
+import Profile from "./pages/Dashboard/Profile";
 
 function App() {
   return (
@@ -44,6 +48,10 @@ function App() {
       >
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/dashboard/create" element={<CreateContent />} />
+        <Route path="/dashboard/content" element={<Content />} />
+        <Route path="/dashboard/calendar" element={<Calendar />} />
+        <Route path="/dashboard/analytics" element={<Analytics />} />
+        <Route path="/dashboard/profile" element={<Profile />} />
       </Route>
     </Routes>
   );

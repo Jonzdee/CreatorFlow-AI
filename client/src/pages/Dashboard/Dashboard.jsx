@@ -6,35 +6,71 @@ import {
   ArrowUpRight,
   Plus,
 } from "lucide-react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { getContentAnalytics } from "../../services/contentService";
 import useCurrentUser from "../../hooks/useCurrentUser";
+import RecentContent from "../../components/dashboad/RecentContent";
 
 
-
-const stats = [
-  {
-    title: "Content Created",
-    value: "0",
-    description: "Total content generated",
-    icon: FileText,
-  },
-  {
-    title: "Scheduled Posts",
-    value: "0",
-    description: "Posts waiting to publish",
-    icon: CalendarDays,
-  },
-  {
-    title: "Engagement",
-    value: "0%",
-    description: "Average engagement",
-    icon: BarChart3,
-  },
-];
 
 const Dashboard = () => {
     const { user, loading } = useCurrentUser();
 
+    const [analytics, setAnalytics] = useState({
+      totalContent: 0,
+      scheduledPosts: 0,
+      draftContent: 0,
+      publishedContent: 0,
+      thisMonth: 0,
+      platformStats: [],
+    });
+
+    const [analyticsLoading, setAnalyticsLoading] = useState(true);
+    useEffect(() => {
+      const loadAnalytics = async () => {
+        try {
+          const response = await getContentAnalytics();
+
+          setAnalytics(response.data);
+        } catch (error) {
+          console.error("Failed to load analytics:", error);
+        } finally {
+          setAnalyticsLoading(false);
+        }
+      };
+
+      loadAnalytics();
+    }, []);
+const stats = [
+    {
+      title: "Content Created",
+      value: analytics?.totalContent ?? 0,
+      description: "Total content generated",
+      icon: FileText,
+    },
+    {
+      title: "Scheduled Posts",
+      value: analytics?.scheduledContent ?? 0,
+      description: "Posts waiting to publish",
+      icon: CalendarDays,
+    },
+    {
+      title: "Published Posts",
+      value: analytics?.publishedContent ?? 0,
+      description: "Successfully published",
+      icon: BarChart3,
+    },
+  ];
     if (loading) {
       return <div>Loading...</div>;
     }
@@ -73,7 +109,7 @@ const Dashboard = () => {
       </section>
 
       {/* Stats */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat) => {
           const Icon = stat.icon;
 
@@ -101,7 +137,45 @@ const Dashboard = () => {
           );
         })}
       </section>
+      {/* Platform Performance */}
+      <section className="bg-white border border-gray-200 rounded-2xl p-5 sm:p-6">
+        <div className="mb-6">
+          <h2 className="text-lg font-bold text-gray-900">
+            Platform Performance
+          </h2>
 
+          <p className="text-sm text-gray-500 mt-1">
+            See where you are creating the most content.
+          </p>
+        </div>
+
+        {analytics.platformStats.length === 0 ? (
+          <div className="h-64 flex items-center justify-center text-sm text-gray-400">
+            No platform data available yet.
+          </div>
+        ) : (
+          <div className="h-72">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={analytics.platformStats.map((item) => ({
+                  platform: item._id,
+                  content: item.count,
+                }))}
+              >
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+
+                <XAxis dataKey="platform" tick={{ fontSize: 12 }} />
+
+                <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
+
+                <Tooltip />
+
+                <Bar dataKey="content" name="Content" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+      </section>
       {/* Quick Actions + Recent Content */}
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Quick Actions */}
@@ -160,47 +234,8 @@ const Dashboard = () => {
         </div>
 
         {/* Recent Content */}
-        <div className="lg:col-span-2 bg-white border border-gray-200 rounded-2xl p-5">
-          <div className="flex items-center justify-between mb-5">
-            <div>
-              <h2 className="text-lg font-bold text-gray-900">
-                Recent Content
-              </h2>
-
-              <p className="text-sm text-gray-500 mt-1">
-                Your latest generated content.
-              </p>
-            </div>
-
-            <Link
-              to="/dashboard/content"
-              className="text-sm font-semibold text-purple-600 hover:text-purple-700"
-            >
-              View all
-            </Link>
-          </div>
-
-          {/* Empty state */}
-          <div className="min-h-52 flex flex-col items-center justify-center text-center">
-            <div className="w-14 h-14 rounded-2xl bg-purple-50 flex items-center justify-center">
-              <FileText size={25} className="text-purple-600" />
-            </div>
-
-            <h3 className="font-semibold text-gray-900 mt-4">No content yet</h3>
-
-            <p className="text-sm text-gray-500 mt-1 max-w-sm">
-              Your generated posts will appear here once you create your first
-              piece of content.
-            </p>
-
-            <Link
-              to="/dashboard/create"
-              className="mt-4 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition"
-            >
-              <Sparkles size={17} />
-              Create your first post
-            </Link>
-          </div>
+        <div className="lg:col-span-2">
+          <RecentContent />
         </div>
       </section>
     </div>

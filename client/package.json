@@ -23,6 +23,7 @@
     "react-router-dom": "^7.18.2",
     "react-select": "^5.10.2",
     "react-timezone-select": "^3.3.3",
+    "recharts": "^3.10.1",
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
