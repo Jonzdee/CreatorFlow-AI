@@ -108,12 +108,28 @@ export const deleteContent = async (req, res) => {
 
 export const updateContent = async (req, res) => {
     try {
+        const { content: contentText, topic, writingStyle } = req.body;
+
+        const updates = {};
+
+        if (contentText !== undefined) {
+            updates.content = contentText;
+        }
+
+        if (topic !== undefined) {
+            updates.topic = topic;
+        }
+
+        if (writingStyle !== undefined) {
+            updates.writingStyle = writingStyle;
+        }
+
         const content = await Content.findOneAndUpdate(
             {
                 _id: req.params.id,
                 user: req.user.id,
             },
-            req.body,
+            updates,
             {
                 new: true,
                 runValidators: true,
@@ -127,7 +143,7 @@ export const updateContent = async (req, res) => {
             });
         }
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             message: "Content updated successfully",
             data: content,
@@ -135,7 +151,7 @@ export const updateContent = async (req, res) => {
     } catch (error) {
         console.error("Update content error:", error);
 
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: "Failed to update content",
         });
@@ -403,6 +419,28 @@ export const getContentAnalytics = async (req, res) => {
         res.status(500).json({
             success: false,
             message: "Failed to load analytics",
+        });
+    }
+};
+export const getLatestDraftContent = async (req, res) => {
+    try {
+        const draft = await Content.findOne({
+            user: req.user.id,
+            status: "draft",
+        }).sort({
+            updatedAt: -1,
+        });
+
+        return res.status(200).json({
+            success: true,
+            data: draft,
+        });
+    } catch (error) {
+        console.error("Get latest draft error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to restore latest draft",
         });
     }
 };
