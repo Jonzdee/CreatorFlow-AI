@@ -13,32 +13,52 @@ import {
   updateSchedule,
   cancelSchedule,
 } from "../../services/contentService";
+
 const Calendar = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-const [selectedPost, setSelectedPost] = useState(null);
-const [actionLoading, setActionLoading] = useState(false);
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [actionLoading, setActionLoading] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [error, setError] = useState("");
+
+  // ==============================
+  // LOAD SCHEDULED CONTENT
+  // ==============================
+
+  const loadScheduledPosts = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const response = await getScheduledContent();
+
+      console.log("Scheduled content:", response.data);
+
+      setPosts(response.data || []);
+    } catch (error) {
+      console.error("Failed to load scheduled posts:", error);
+
+      setError(
+        error.response?.data?.message || "Failed to load scheduled content.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const loadScheduledPosts = async () => {
-      try {
-        const response = await getScheduledContent();
-        setPosts(response.data || []);
-      } catch (error) {
-        console.error("Failed to load scheduled posts:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadScheduledPosts();
   }, []);
+
+  // ==============================
+  // DATE INFORMATION
+  // ==============================
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
-  const monthName = currentDate.toLocaleDateString(undefined, {
+  const monthName = currentDate.toLocaleDateString("en-NG", {
     month: "long",
     year: "numeric",
   });
@@ -50,16 +70,43 @@ const [actionLoading, setActionLoading] = useState(false);
   const calendarDays = useMemo(() => {
     const days = [];
 
+    // Empty cells before first day
     for (let i = 0; i < firstDay; i++) {
       days.push(null);
     }
 
+    // Actual days
     for (let day = 1; day <= daysInMonth; day++) {
       days.push(day);
     }
 
     return days;
   }, [firstDay, daysInMonth]);
+
+  // ==============================
+  // FORMAT NIGERIAN DATE
+  // ==============================
+
+  const formatNigeriaDate = (date) => {
+    return new Date(date).toLocaleDateString("en-NG", {
+      timeZone: "Africa/Lagos",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  };
+
+  const formatNigeriaTime = (date) => {
+    return new Date(date).toLocaleTimeString("en-NG", {
+      timeZone: "Africa/Lagos",
+      hour: "numeric",
+      minute: "2-digit",
+    });
+  };
+
+  // ==============================
+  // GET POSTS FOR DAY
+  // ==============================
 
   const getPostsForDay = (day) => {
     if (!day) return [];
@@ -69,13 +116,32 @@ const [actionLoading, setActionLoading] = useState(false);
 
       const date = new Date(post.scheduledAt);
 
+      const nigeriaDate = new Intl.DateTimeFormat("en-US", {
+        timeZone: "Africa/Lagos",
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+      }).formatToParts(date);
+
+      const dateParts = {};
+
+      nigeriaDate.forEach((part) => {
+        if (part.type !== "literal") {
+          dateParts[part.type] = Number(part.value);
+        }
+      });
+
       return (
-        date.getFullYear() === year &&
-        date.getMonth() === month &&
-        date.getDate() === day
+        dateParts.year === year &&
+        dateParts.month === month + 1 &&
+        dateParts.day === day
       );
     });
   };
+
+  // ==============================
+  // NAVIGATION
+  // ==============================
 
   const previousMonth = () => {
     setCurrentDate(new Date(year, month - 1, 1));
@@ -89,72 +155,128 @@ const [actionLoading, setActionLoading] = useState(false);
     setCurrentDate(new Date());
   };
 
+  // ==============================
+  // TODAY
+  // ==============================
+
   const isToday = (day) => {
     if (!day) return false;
 
     const today = new Date();
 
+    const todayParts = new Intl.DateTimeFormat("en-US", {
+      timeZone: "Africa/Lagos",
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+    }).formatToParts(today);
+
+    const todayDate = {};
+
+    todayParts.forEach((part) => {
+      if (part.type !== "literal") {
+        todayDate[part.type] = Number(part.value);
+      }
+    });
+
     return (
-      today.getFullYear() === year &&
-      today.getMonth() === month &&
-      today.getDate() === day
+      todayDate.year === year &&
+      todayDate.month === month + 1 &&
+      todayDate.day === day
     );
   };
-const handleCancelSchedule = async () => {
-  if (!selectedPost) return;
 
-  const confirmed = window.confirm("Cancel the schedule for this post?");
+  // ==============================
+  // CANCEL SCHEDULE
+  // ==============================
 
-  if (!confirmed) return;
+  const handleCancelSchedule = async () => {
+    if (!selectedPost) return;
 
-  try {
-    setActionLoading(true);
-
-    await cancelSchedule(selectedPost._id);
-
-    setPosts((prev) => prev.filter((post) => post._id !== selectedPost._id));
-
-    setSelectedPost(null);
-  } catch (error) {
-    console.error("Failed to cancel schedule:", error);
-
-    alert(error.response?.data?.message || "Failed to cancel schedule");
-  } finally {
-    setActionLoading(false);
-  }
-};
-const handleReschedule = async () => {
-  if (!selectedPost) return;
-
-  const newDate = window.prompt(
-    "Enter new date and time (example: 2026-08-20T20:00)",
-  );
-
-  if (!newDate) return;
-
-  try {
-    setActionLoading(true);
-
-    const response = await updateSchedule(selectedPost._id, newDate);
-
-    setPosts((prev) =>
-      prev.map((post) =>
-        post._id === selectedPost._id ? response.data : post,
-      ),
+    const confirmed = window.confirm(
+      "Are you sure you want to cancel this scheduled post?",
     );
 
-    setSelectedPost(response.data);
-  } catch (error) {
-    console.error("Failed to reschedule:", error);
+    if (!confirmed) return;
 
-    alert(error.response?.data?.message || "Failed to reschedule post");
-  } finally {
-    setActionLoading(false);
-  }
-};
+    try {
+      setActionLoading(true);
+
+      await cancelSchedule(selectedPost._id);
+
+      setPosts((prev) => prev.filter((post) => post._id !== selectedPost._id));
+
+      setSelectedPost(null);
+    } catch (error) {
+      console.error("Failed to cancel schedule:", error);
+
+      alert(
+        error.response?.data?.message || "Failed to cancel scheduled post.",
+      );
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  // ==============================
+  // RESCHEDULE
+  // ==============================
+
+  const handleReschedule = async () => {
+    if (!selectedPost) return;
+
+    const newDate = window.prompt(
+      "Enter the new date and time.\n\nExample: 25/08/2026 10:00 AM",
+    );
+
+    if (!newDate) return;
+
+    /*
+      For now we still send the value to your backend.
+      Later we can replace this prompt with the same
+      ScheduleModal used in CreateContent.
+    */
+
+    try {
+      setActionLoading(true);
+
+      const response = await updateSchedule(selectedPost._id, newDate);
+
+      const updatedPost = response.data;
+
+      setPosts((prev) =>
+        prev.map((post) =>
+          post._id === selectedPost._id ? updatedPost : post,
+        ),
+      );
+
+      setSelectedPost(updatedPost);
+
+      // Move calendar to the new scheduled month
+      if (updatedPost?.scheduledAt) {
+        const newScheduledDate = new Date(updatedPost.scheduledAt);
+
+        setCurrentDate(
+          new Date(
+            newScheduledDate.getFullYear(),
+            newScheduledDate.getMonth(),
+            1,
+          ),
+        );
+      }
+    } catch (error) {
+      console.error("Failed to reschedule:", error);
+
+      alert(error.response?.data?.message || "Failed to reschedule post.");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* HEADER */}
+
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
@@ -182,9 +304,19 @@ const handleReschedule = async () => {
         </button>
       </div>
 
-      {/* Calendar */}
+      {/* ERROR */}
+
+      {error && (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-600">
+          {error}
+        </div>
+      )}
+
+      {/* CALENDAR */}
+
       <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
-        {/* Calendar Header */}
+        {/* CALENDAR HEADER */}
+
         <div className="p-4 sm:p-5 border-b border-gray-200 flex items-center justify-between">
           <h2 className="text-lg sm:text-xl font-bold text-gray-900">
             {monthName}
@@ -209,7 +341,8 @@ const handleReschedule = async () => {
           </div>
         </div>
 
-        {/* Weekdays */}
+        {/* WEEKDAYS */}
+
         <div className="grid grid-cols-7 border-b border-gray-200">
           {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
             <div
@@ -221,10 +354,23 @@ const handleReschedule = async () => {
           ))}
         </div>
 
-        {/* Days */}
+        {/* DAYS */}
+
         {loading ? (
           <div className="p-12 text-center text-gray-500">
             Loading calendar...
+          </div>
+        ) : posts.length === 0 ? (
+          <div className="p-12 text-center">
+            <CalendarDays size={40} className="mx-auto text-gray-300" />
+
+            <h3 className="mt-4 font-semibold text-gray-700">
+              No scheduled content yet
+            </h3>
+
+            <p className="text-sm text-gray-500 mt-1">
+              Schedule a post from Create Content and it will appear here.
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-7">
@@ -240,7 +386,8 @@ const handleReschedule = async () => {
                 >
                   {day && (
                     <>
-                      {/* Date */}
+                      {/* DATE */}
+
                       <div className="flex justify-end">
                         <span
                           className={`w-7 h-7 flex items-center justify-center rounded-full text-xs font-semibold ${
@@ -253,15 +400,11 @@ const handleReschedule = async () => {
                         </span>
                       </div>
 
-                      {/* Posts */}
+                      {/* POSTS */}
+
                       <div className="mt-1 space-y-1">
                         {dayPosts.map((post) => {
-                          const time = new Date(
-                            post.scheduledAt,
-                          ).toLocaleTimeString(undefined, {
-                            hour: "numeric",
-                            minute: "2-digit",
-                          });
+                          const time = formatNigeriaTime(post.scheduledAt);
 
                           return (
                             <button
@@ -292,7 +435,8 @@ const handleReschedule = async () => {
         )}
       </div>
 
-      {/* Scheduled summary */}
+      {/* SUMMARY */}
+
       <div className="bg-white border border-gray-200 rounded-2xl p-5">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center">
@@ -308,10 +452,14 @@ const handleReschedule = async () => {
           </div>
         </div>
       </div>
+
+      {/* POST DETAILS MODAL */}
+
       {selectedPost && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40">
           <div className="w-full max-w-lg bg-white rounded-2xl shadow-xl overflow-hidden">
-            {/* Header */}
+            {/* HEADER */}
+
             <div className="flex items-center justify-between p-5 border-b border-gray-200">
               <div>
                 <h2 className="text-lg font-bold text-gray-900">
@@ -331,7 +479,8 @@ const handleReschedule = async () => {
               </button>
             </div>
 
-            {/* Content */}
+            {/* CONTENT */}
+
             <div className="p-5 space-y-5">
               <div>
                 <p className="text-xs font-semibold uppercase text-gray-400">
@@ -355,29 +504,25 @@ const handleReschedule = async () => {
                 </div>
               </div>
 
-              <div className="flex flex-wrap gap-3">
-                <div className="px-3 py-2 rounded-lg bg-purple-50 text-purple-700 text-sm">
-                  📱 {selectedPost.platform}
-                </div>
+              {selectedPost.scheduledAt && (
+                <div className="flex flex-wrap gap-3">
+                  <div className="px-3 py-2 rounded-lg bg-purple-50 text-purple-700 text-sm">
+                    📱 {selectedPost.platform}
+                  </div>
 
-                <div className="px-3 py-2 rounded-lg bg-gray-100 text-gray-700 text-sm">
-                  📅 {new Date(selectedPost.scheduledAt).toLocaleDateString()}
-                </div>
+                  <div className="px-3 py-2 rounded-lg bg-gray-100 text-gray-700 text-sm">
+                    📅 {formatNigeriaDate(selectedPost.scheduledAt)}
+                  </div>
 
-                <div className="px-3 py-2 rounded-lg bg-gray-100 text-gray-700 text-sm">
-                  🕐{" "}
-                  {new Date(selectedPost.scheduledAt).toLocaleTimeString(
-                    undefined,
-                    {
-                      hour: "numeric",
-                      minute: "2-digit",
-                    },
-                  )}
+                  <div className="px-3 py-2 rounded-lg bg-gray-100 text-gray-700 text-sm">
+                    🕐 {formatNigeriaTime(selectedPost.scheduledAt)}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
-            {/* Actions */}
+            {/* ACTIONS */}
+
             <div className="p-5 border-t border-gray-200 flex flex-col sm:flex-row gap-3">
               <button
                 onClick={handleReschedule}

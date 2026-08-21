@@ -28,11 +28,12 @@ const Dashboard = () => {
 
     const [analytics, setAnalytics] = useState({
       totalContent: 0,
-      scheduledPosts: 0,
+      scheduledContent: 0,
       draftContent: 0,
       publishedContent: 0,
       thisMonth: 0,
       platformStats: [],
+      contentTypeStats: [],
     });
 
     const [analyticsLoading, setAnalyticsLoading] = useState(true);
@@ -70,6 +71,12 @@ const stats = [
       description: "Successfully published",
       icon: BarChart3,
     },
+    {
+      title: "Draft Content",
+      value: analyticsLoading ? "..." : analytics.draftContent,
+      description: "Content waiting to be finished",
+      icon: FileText,
+    }
   ];
     if (loading) {
       return <div>Loading...</div>;

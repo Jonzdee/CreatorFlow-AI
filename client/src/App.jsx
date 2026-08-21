@@ -14,7 +14,8 @@ import Content from "./pages/Dashboard/Content";
 import Calendar from "./pages/Dashboard/Calendar";
 import Analytics from "./pages/Dashboard/Analytics";
 import Profile from "./pages/Dashboard/Profile";
-
+import Ideas from "./pages/Dashboard/Ideas";
+import Settings from "./pages/Dashboard/Settings";
 function App() {
   return (
     <Routes>
@@ -52,6 +53,8 @@ function App() {
         <Route path="/dashboard/calendar" element={<Calendar />} />
         <Route path="/dashboard/analytics" element={<Analytics />} />
         <Route path="/dashboard/profile" element={<Profile />} />
+        <Route path="/dashboard/ideas" element={<Ideas />} />
+        <Route path="/dashboard/settings" element={<Settings />} />
       </Route>
     </Routes>
   );
