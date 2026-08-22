@@ -49,6 +49,10 @@ const userSchema = new mongoose.Schema(
             enum: [...NICHES, ""],
             default: "",
         },
+        avatar: {
+            type: String,
+            default: "",
+        },
 
         platforms: {
             type: [String],

@@ -62,39 +62,49 @@ export const getCurrentUser = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
     try {
-        const { name, niche } = req.body;
+        const { name, niche, avatar } = req.body;
 
-        if (!name?.trim()) {
-            return res.status(400).json({
-                success: false,
-                message: "Name is required",
-            });
-        }
+        const user = await User.findById(req.user.id);
 
-        const updatedUser = await User.findByIdAndUpdate(
-            req.user.id,
-            {
-                name: name.trim(),
-                ...(niche !== undefined && { niche }),
-            },
-            {
-                new: true,
-                runValidators: true,
-            }
-        ).select("-password");
-
-        if (!updatedUser) {
+        if (!user) {
             return res.status(404).json({
                 success: false,
                 message: "User not found",
             });
         }
 
+        // Update only the fields that were provided
+        if (name !== undefined) {
+            if (!name.trim()) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Name is required",
+                });
+            }
+
+            user.name = name.trim();
+        }
+
+        if (niche !== undefined) {
+            user.niche = niche;
+        }
+
+        if (avatar !== undefined) {
+            user.avatar = avatar;
+        }
+
+        await user.save();
+
+        // Don't return password
+        const updatedUser = user.toObject();
+        delete updatedUser.password;
+
         return res.status(200).json({
             success: true,
             message: "Profile updated successfully",
             data: updatedUser,
         });
+
     } catch (error) {
         console.error("Update profile error:", error);
 
@@ -104,7 +114,6 @@ export const updateProfile = async (req, res) => {
         });
     }
 };
-
 export const changePassword = async (req, res) => {
     try {
         const {
