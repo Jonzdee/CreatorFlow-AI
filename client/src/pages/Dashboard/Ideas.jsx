@@ -24,6 +24,8 @@ const EMPTY_FORM = {
   contentType: "",
 };
 
+import { PLATFORM_OPTIONS } from "@shared/platforms";
+import { CONTENT_TYPE_OPTIONS } from "@shared/contentTypes";
 const Ideas = () => {
   // ----------------------------------------
   // STATE
@@ -376,15 +378,11 @@ const Ideas = () => {
               >
                 <option value="">Select platform</option>
 
-                <option value="Instagram">Instagram</option>
-
-                <option value="LinkedIn">LinkedIn</option>
-
-                <option value="Twitter">Twitter / X</option>
-
-                <option value="Facebook">Facebook</option>
-
-                <option value="TikTok">TikTok</option>
+                {PLATFORM_OPTIONS.map((platform) => (
+                  <option key={platform.id} value={platform.id}>
+                    {platform.name}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -408,15 +406,11 @@ const Ideas = () => {
               >
                 <option value="">Select type</option>
 
-                <option value="Post">Post</option>
-
-                <option value="Thread">Thread</option>
-
-                <option value="Caption">Caption</option>
-
-                <option value="Article">Article</option>
-
-                <option value="Video Script">Video Script</option>
+                {CONTENT_TYPE_OPTIONS.map((type) => (
+                  <option key={type.id} value={type.id}>
+                    {type.title}
+                  </option>
+                ))}
               </select>
             </div>
           </div>

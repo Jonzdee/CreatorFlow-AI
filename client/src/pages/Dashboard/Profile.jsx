@@ -1,10 +1,20 @@
 import { useEffect, useState } from "react";
-import { UserCircle, Save } from "lucide-react";
+
 import useCurrentUser from "../../hooks/useCurrentUser";
 import { updateProfile, changePassword  } from "../../services/userService";
+import {
+  getUploadSignature,
+  uploadFileToCloudinary,
+} from "../../services/contentService";
+import { UserCircle, Save, Camera, Loader2 } from "lucide-react";
+
 
 const Profile = () => {
-  const { user, loading } = useCurrentUser();
+const [avatar, setAvatar] = useState("");
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [avatarMessage, setAvatarMessage] = useState("");
+
+  const { user, loading, refreshUser } = useCurrentUser();
 const [passwordForm, setPasswordForm] = useState({
   currentPassword: "",
   newPassword: "",
@@ -21,14 +31,81 @@ const [passwordMessage, setPasswordMessage] = useState("");
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
 
-  useEffect(() => {
-    if (user) {
-      setFormData({
-        name: user.name || "",
-        niche: user.niche || "",
-      });
+ useEffect(() => {
+   if (user) {
+     setFormData({
+       name: user.name || "",
+       niche: user.niche || "",
+     });
+
+     setAvatar(user.avatar || "");
+   }
+ }, [user]);
+
+  const handleAvatarUpload = async (e) => {
+    const file = e.target.files?.[0];
+
+    e.target.value = "";
+
+    if (!file) return;
+
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      setAvatarMessage("Please select a JPG, PNG, or WebP image.");
+      return;
     }
-  }, [user]);
+
+    if (file.size > 5 * 1024 * 1024) {
+      setAvatarMessage("Profile picture must be less than 5 MB.");
+      return;
+    }
+
+    try {
+      setUploadingAvatar(true);
+      setAvatarMessage("");
+
+      // Get Cloudinary signature
+      const signatureResponse = await getUploadSignature();
+
+      const signatureData = signatureResponse.data;
+
+      if (!signatureData) {
+        throw new Error("Unable to prepare image upload.");
+      }
+
+      // Upload image
+      const uploadResponse = await uploadFileToCloudinary(file, signatureData);
+
+      if (!uploadResponse?.secure_url) {
+        throw new Error("Image upload failed.");
+      }
+
+      // Save avatar URL to your backend
+     const response = await updateProfile({
+       avatar: uploadResponse.secure_url,
+     });
+
+     await refreshUser();
+
+     window.dispatchEvent(new Event("userUpdated"));
+
+     setAvatarMessage(
+       response.message || "Profile picture updated successfully.",
+     );
+      // IMPORTANT:
+      // Your useCurrentUser hook should refresh the user
+      // or your AuthContext should update the user.
+    } catch (error) {
+      console.error("Avatar upload error:", error);
+
+      setAvatarMessage(
+        error.response?.data?.message ||
+          error.message ||
+          "Failed to upload profile picture.",
+      );
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -93,6 +170,14 @@ const handlePasswordChange = async (e) => {
   } finally {
     setPasswordLoading(false);
   }
+
+  const response = await updateProfile(formData);
+
+  await refreshUser();
+
+  window.dispatchEvent(new Event("userUpdated"));
+
+  setMessage(response.message || "Profile updated successfully.");
 };
 
   if (loading) {
@@ -119,8 +204,38 @@ const handlePasswordChange = async (e) => {
       {/* Profile Card */}
       <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8">
         <div className="flex items-center gap-4 pb-6 border-b border-gray-100">
-          <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center">
-            <UserCircle size={38} className="text-purple-600" />
+          <div className="relative">
+            <div className="w-20 h-20 rounded-full overflow-hidden bg-purple-100 flex items-center justify-center border-2 border-purple-100">
+              {avatar ? (
+                <img
+                  src={avatar}
+                  alt={user?.name || "Profile"}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <UserCircle size={42} className="text-purple-600" />
+              )}
+            </div>
+
+            <label
+              className={`absolute bottom-0 right-0 w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center border-2 border-white cursor-pointer hover:bg-purple-700 transition ${
+                uploadingAvatar ? "opacity-50 pointer-events-none" : ""
+              }`}
+            >
+              {uploadingAvatar ? (
+                <Loader2 size={15} className="animate-spin" />
+              ) : (
+                <Camera size={15} />
+              )}
+
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                hidden
+                onChange={handleAvatarUpload}
+                disabled={uploadingAvatar}
+              />
+            </label>
           </div>
 
           <div>

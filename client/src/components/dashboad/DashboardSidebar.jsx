@@ -122,11 +122,11 @@ const DashboardSidebar = ({ isOpen = true, onClose }) => {
 
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto px-4 py-6">
-          <NavSection title="Main" links={mainLinks} />
+          <NavSection title="Main" links={mainLinks} onClose={onClose} />
 
-          <NavSection title="Manage" links={manageLinks} />
+          <NavSection title="Manage" links={manageLinks} onClose={onClose} />
 
-          <NavSection title="Account" links={accountLinks} />
+          <NavSection title="Account" links={accountLinks} onClose={onClose} />
         </nav>
 
         {/* Create Content */}
@@ -145,7 +145,7 @@ const DashboardSidebar = ({ isOpen = true, onClose }) => {
   );
 };
 
-const NavSection = ({ title, links }) => {
+const NavSection = ({ title, links, onClose }) => {
   return (
     <div className="mb-7">
       <p className="px-3 mb-2 text-[11px] font-semibold uppercase tracking-wider text-gray-400">
@@ -160,6 +160,7 @@ const NavSection = ({ title, links }) => {
             <NavLink
               key={link.path}
               to={link.path}
+              onClick={onClose}
               className={({ isActive }) =>
                 `
                 flex items-center gap-3

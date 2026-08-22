@@ -84,6 +84,27 @@ const CreateContent = () => {
   const [searchParams] = useSearchParams();
 
   const ideaFromUrl = searchParams.get("idea");
+  const platformFromUrl = searchParams.get("platform");
+  const contentTypeFromUrl = searchParams.get("contentType");
+
+  const normalizedPlatform =
+    PLATFORM_OPTIONS.find(
+      (platform) =>
+        platform.id?.toLowerCase() === platformFromUrl?.toLowerCase() ||
+        platform.name?.toLowerCase() === platformFromUrl?.toLowerCase(),
+    )?.id || "";
+
+  const normalizedContentType =
+    CONTENT_TYPE_OPTIONS.find(
+      (type) =>
+        type.id?.toLowerCase() === contentTypeFromUrl?.toLowerCase() ||
+        type.title?.toLowerCase() === contentTypeFromUrl?.toLowerCase(),
+    )?.id || "";
+
+  const hasIdeaFromUrl =
+    Boolean(ideaFromUrl) ||
+    Boolean(platformFromUrl) ||
+    Boolean(contentTypeFromUrl);
 
   // --------------------------------
   // Content state
@@ -128,39 +149,47 @@ const CreateContent = () => {
   // Form state
   // --------------------------------
 
-  const [formData, setFormData] = useState({
-    contentType: "",
-    platform: "",
-    topic: ideaFromUrl || "",
-    writingStyle: "",
-  });
-
+ const [formData, setFormData] = useState({
+   contentType: normalizedContentType,
+   platform: normalizedPlatform,
+   topic: ideaFromUrl || "",
+   writingStyle: "",
+ });
 
   useEffect(() => {
     const restoreDraft = async () => {
-      if (ideaFromUrl) {
-        setRestoringDraft(false);
-        return;
-      }
-
       try {
+        /*
+         * If the user came from Saved Ideas,
+         * keep the values from the URL.
+         */
+        if (hasIdeaFromUrl) {
+          return;
+        }
+
+        /*
+         * Otherwise restore the latest draft.
+         */
         const response = await getLatestDraftContent();
 
-        if (response?.data) {
-          const draft = response.data;
-
-          setGeneratedContent(draft);
-          setMedia(Array.isArray(draft.media) ? draft.media : []);
-
-          setFormData({
-            contentType: draft.contentType || "",
-            platform: draft.platform || "",
-            topic: draft.topic || "",
-            writingStyle: draft.writingStyle || "",
-          });
-
-          setDraftRestored(true);
+        if (!response?.data) {
+          return;
         }
+
+        const draft = response.data;
+
+        setGeneratedContent(draft);
+
+        setMedia(draft.media || []);
+
+        setFormData({
+          contentType: draft.contentType || "",
+          platform: draft.platform || "",
+          topic: draft.topic || "",
+          writingStyle: draft.writingStyle || "",
+        });
+
+        setDraftRestored(true);
       } catch (error) {
         console.error("Failed to restore draft:", error);
       } finally {
@@ -169,7 +198,7 @@ const CreateContent = () => {
     };
 
     restoreDraft();
-  }, [ideaFromUrl]);
+  }, [hasIdeaFromUrl]);
   // --------------------------------
   // Form update
   // --------------------------------

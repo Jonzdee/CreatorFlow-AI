@@ -118,7 +118,7 @@ const [showUserMenu, setShowUserMenu] = useState(false);
 
             {/* Notification Dropdown */}
             {showNotifications && (
-              <div className="absolute right-0 mt-2 w-[320px] sm:w-[380px] bg-white border border-gray-200 rounded-2xl shadow-xl overflow-hidden">
+              <div className="absolute right-0 mt-2 w-[320px] sm:w-95 bg-white border border-gray-200 rounded-2xl shadow-xl overflow-hidden">
                 {/* Header */}
                 <div className="flex items-center justify-between p-4 border-b border-gray-200">
                   <div>
@@ -131,7 +131,7 @@ const [showUserMenu, setShowUserMenu] = useState(false);
                 </div>
 
                 {/* Notifications */}
-                <div className="max-h-[400px] overflow-y-auto">
+                <div className="max-h-100 overflow-y-auto">
                   {notifications.length === 0 ? (
                     <div className="p-8 text-center">
                       <Bell size={28} className="mx-auto text-gray-300" />
@@ -194,10 +194,17 @@ const [showUserMenu, setShowUserMenu] = useState(false);
               onClick={() => setShowUserMenu((prev) => !prev)}
               className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-gray-50 transition"
             >
-              <div className="w-9 h-9 rounded-full bg-purple-100 flex items-center justify-center">
-                <UserCircle size={21} className="text-purple-600" />
+              <div className="w-9 h-9 rounded-full bg-purple-100 overflow-hidden flex items-center justify-center">
+                {user?.avatar ? (
+                  <img
+                    src={user.avatar}
+                    alt={user.name || "Profile"}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <UserCircle size={21} className="text-purple-600" />
+                )}
               </div>
-
               <div className="hidden sm:block text-left">
                 <p className="text-sm font-semibold text-gray-900">
                   {loading ? "Loading..." : user?.name || "Creator"}
