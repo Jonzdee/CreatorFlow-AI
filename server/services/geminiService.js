@@ -226,3 +226,97 @@ Rules:
         );
     }
 };
+export const generateDashboardGreeting = async ({
+    name,
+    analytics,
+    recentContent,
+}) => {
+    try {
+        const prompt = `
+You are CreatorFlow AI, a friendly and intelligent social media manager.
+
+Generate a short personalized greeting for a content creator opening their CreatorFlow dashboard.
+
+CREATOR NAME:
+${name || "Creator"}
+
+CREATOR ANALYTICS:
+${JSON.stringify(analytics, null, 2)}
+
+RECENT CONTENT:
+${JSON.stringify(recentContent, null, 2)}
+
+Rules:
+- Greet the creator naturally.
+- Mention their name.
+- Use their actual CreatorFlow data when useful.
+- Never invent statistics or content.
+- If they have drafts, encourage them to work on them.
+- If they have scheduled content, acknowledge their consistency.
+- If they have no content, encourage them to create their first piece.
+- Sound like a helpful human social media manager.
+- Keep it short.
+- Do not use markdown.
+
+Return ONLY valid JSON.
+
+Use exactly:
+
+{
+    "greeting": ""
+}
+`;
+
+        const response = await ai.models.generateContent({
+            model: MODEL,
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+            },
+        });
+
+        const text = response.text;
+
+        if (!text) {
+            throw new Error(
+                "Gemini returned an empty dashboard greeting."
+            );
+        }
+
+        let parsed;
+
+        try {
+            parsed = JSON.parse(text);
+        } catch (error) {
+            console.error(
+                "Dashboard greeting JSON parse error:",
+                error
+            );
+
+            console.error(
+                "Gemini raw response:",
+                text
+            );
+
+            throw new Error(
+                "Gemini returned invalid dashboard greeting JSON."
+            );
+        }
+
+        return {
+            greeting:
+                parsed.greeting ||
+                `Welcome back, ${name || "Creator"}! 👋`,
+        };
+    } catch (error) {
+        console.error(
+            "Gemini dashboard greeting error:",
+            error
+        );
+
+        throw new Error(
+            error.message ||
+            "Failed to generate dashboard greeting."
+        );
+    }
+};

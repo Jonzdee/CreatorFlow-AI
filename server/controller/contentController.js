@@ -47,12 +47,12 @@ export const generateContent = async (req, res) => {
             topic,
             writingStyle,
 
-            title: generatedContent.title,
-            hook: generatedContent.hook,
-            content: generatedContent.content,
-            caption: generatedContent.caption,
-            hashtags: generatedContent.hashtags,
-            callToAction: generatedContent.callToAction,
+            title: generated.title,
+            hook: generated.hook,
+            content: generated.content,
+            caption: generated.caption,
+            hashtags: generated.hashtags,
+            callToAction: generated.callToAction,
 
             status: "draft",
         });
