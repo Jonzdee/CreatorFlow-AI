@@ -250,6 +250,13 @@ const Ideas = () => {
       idea.contentType?.toLowerCase().includes(query)
     );
   });
+  const getPlatformName = (id) => {
+    return PLATFORM_OPTIONS.find((platform) => platform.id === id)?.name || id;
+  };
+
+  const getContentTypeName = (id) => {
+    return CONTENT_TYPE_OPTIONS.find((type) => type.id === id)?.title || id;
+  };
 
   // ----------------------------------------
   // RENDER
@@ -266,7 +273,15 @@ const Ideas = () => {
           <div className="flex items-center gap-2">
             <Lightbulb size={22} className="text-purple-600" />
 
-            <h1 className="text-2xl font-bold text-gray-900">Saved Ideas</h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl font-bold text-gray-900">Saved Ideas</h1>
+
+              {!loading && (
+                <span className="px-2.5 py-1 rounded-full bg-purple-50 text-purple-700 text-xs font-semibold">
+                  {ideas.length}
+                </span>
+              )}
+            </div>
           </div>
 
           <p className="text-sm text-gray-500 mt-1">
@@ -564,13 +579,13 @@ const Ideas = () => {
               <div className="flex flex-wrap gap-2 mt-4">
                 {idea.platform && (
                   <span className="text-xs px-2.5 py-1 rounded-lg bg-purple-50 text-purple-700">
-                    {idea.platform}
+                    {getPlatformName(idea.platform)}
                   </span>
                 )}
 
                 {idea.contentType && (
                   <span className="text-xs px-2.5 py-1 rounded-lg bg-gray-100 text-gray-600">
-                    {idea.contentType}
+                    {getContentTypeName(idea.contentType)}
                   </span>
                 )}
               </div>
@@ -586,7 +601,7 @@ const Ideas = () => {
                 className="mt-5 flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition"
               >
                 <Sparkles size={16} />
-                Create Content
+                Turn Into Content
               </Link>
             </div>
           ))}

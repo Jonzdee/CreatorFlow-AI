@@ -7,7 +7,6 @@ import {
   attachMediaToContent,
   getUploadSignature,
   uploadFileToCloudinary,
-  getLatestDraftContent,
   removeMediaFromContent,
 } from "../../services/contentService";
 
@@ -143,68 +142,82 @@ const CreateContent = () => {
   const [mediaError, setMediaError] = useState("");
 
 
-  const [restoringDraft, setRestoringDraft] = useState(true);
-  const [draftRestored, setDraftRestored] = useState(false);
+  
   // --------------------------------
   // Form state
   // --------------------------------
 
- const [formData, setFormData] = useState({
-   contentType: normalizedContentType,
-   platform: normalizedPlatform,
-   topic: ideaFromUrl || "",
-   writingStyle: "",
- });
+const [formData, setFormData] = useState({
+  contentType: normalizedContentType,
+  platform: normalizedPlatform,
+  topic: ideaFromUrl || "",
+  writingStyle: "",
+});
 
- const handleChange = (e) => {
-   setFormData((prev) => ({
-     ...prev,
-     [e.target.name]: e.target.value,
-   }));
- };
-  useEffect(() => {
-    const restoreDraft = async () => {
-      try {
-        /*
-         * If the user came from Saved Ideas,
-         * keep the values from the URL.
-         */
-        if (hasIdeaFromUrl) {
-          return;
-        }
+const [formRestored, setFormRestored] = useState(false);
 
-        /*
-         * Otherwise restore the latest draft.
-         */
-        const response = await getLatestDraftContent();
+/*
+|--------------------------------------------------------------------------
+| Restore unfinished form from localStorage
+|--------------------------------------------------------------------------
+*/
 
-        if (!response?.data) {
-          return;
-        }
+useEffect(() => {
+  if (hasIdeaFromUrl) {
+    setFormRestored(false);
+    return;
+  }
 
-        const draft = response.data;
+  const savedForm = localStorage.getItem("creatorflow_create_content");
 
-        setGeneratedContent(draft);
+  if (!savedForm) {
+    setFormRestored(false);
+    return;
+  }
 
-        setMedia(draft.media || []);
+  try {
+    const parsed = JSON.parse(savedForm);
 
-        setFormData({
-          contentType: draft.contentType || "",
-          platform: draft.platform || "",
-          topic: draft.topic || "",
-          writingStyle: draft.writingStyle || "",
-        });
+    setFormData((prev) => ({
+      ...prev,
+      ...parsed,
+    }));
 
-        setDraftRestored(true);
-      } catch (error) {
-        console.error("Failed to restore draft:", error);
-      } finally {
-        setRestoringDraft(false);
-      }
-    };
+    setFormRestored(true);
+  } catch (error) {
+    console.error("Failed to restore form:", error);
 
-    restoreDraft();
-  }, [hasIdeaFromUrl]);
+    localStorage.removeItem("creatorflow_create_content");
+    setFormRestored(false);
+  }
+}, [hasIdeaFromUrl]);
+
+/*
+|--------------------------------------------------------------------------
+| Save unfinished form locally
+|--------------------------------------------------------------------------
+*/
+
+useEffect(() => {
+  if (hasIdeaFromUrl) {
+    return;
+  }
+
+  /*
+   * Don't save an empty form.
+   */
+  const hasFormData =
+    formData.contentType ||
+    formData.platform ||
+    formData.topic.trim() ||
+    formData.writingStyle;
+
+  if (!hasFormData) {
+    return;
+  }
+
+  localStorage.setItem("creatorflow_create_content", JSON.stringify(formData));
+}, [formData, hasIdeaFromUrl]);
   // --------------------------------
   // Form update
   // --------------------------------
@@ -393,25 +406,44 @@ const CreateContent = () => {
     try {
       setGenerating(true);
       setError("");
-      setGeneratedContent(null);
       setActionMessage("");
       setEditing(false);
-
       setMedia([]);
       setMediaError("");
 
+      /*
+       * Remove the unfinished form draft BEFORE generation.
+       */
+      localStorage.removeItem("creatorflow_create_content");
+
       const response = await generateContent(formData);
+
+      if (!response?.data) {
+        throw new Error("No content was returned.");
+      }
 
       setGeneratedContent(response.data);
 
-      // In case backend already returns media.
       if (Array.isArray(response.data?.media)) {
         setMedia(response.data.media);
       }
     } catch (error) {
       console.error("Generation error:", error);
 
-      setError(error.response?.data?.message || "Failed to generate content.");
+      /*
+       * If generation fails, save the form again
+       * so the user doesn't lose what they typed.
+       */
+      localStorage.setItem(
+        "creatorflow_create_content",
+        JSON.stringify(formData),
+      );
+
+      setError(
+        error.response?.data?.message ||
+          error.message ||
+          "Failed to generate content.",
+      );
     } finally {
       setGenerating(false);
     }
@@ -549,11 +581,7 @@ const CreateContent = () => {
             Turn your idea into engaging content with AI.
           </p>
         </div>
-        {draftRestored && (
-          <div className="mt-3 rounded-xl border border-purple-100 bg-purple-50 px-4 py-3 text-sm text-purple-700">
-            Your latest draft has been restored.
-          </div>
-        )}
+       
       </div>
       {generatedContent && (
         <section className="bg-white border border-gray-200 rounded-2xl p-5">

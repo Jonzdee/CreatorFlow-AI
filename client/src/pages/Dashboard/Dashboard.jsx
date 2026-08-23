@@ -5,6 +5,7 @@ import {
   FileText,
   ArrowUpRight,
   Plus,
+  Bot,
 } from "lucide-react";
 import {
   BarChart,
@@ -18,9 +19,10 @@ import {
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getContentAnalytics } from "../../services/contentService";
+import { getDashboardGreeting } from "../../services/assistantService";
 import useCurrentUser from "../../hooks/useCurrentUser";
 import RecentContent from "../../components/dashboad/RecentContent";
-
+import AIDashboardInsight from "../../components/ai/AIDashboardInsight";
 
 
 const Dashboard = () => {
@@ -37,6 +39,41 @@ const Dashboard = () => {
     });
 
     const [analyticsLoading, setAnalyticsLoading] = useState(true);
+      const [aiGreeting, setAiGreeting] = useState({
+        greeting: "",
+        message: "",
+      });
+
+      const [aiGreetingLoading, setAiGreetingLoading] = useState(true);
+      useEffect(() => {
+        const loadAIGreeting = async () => {
+          try {
+            setAiGreetingLoading(true);
+
+            const response = await getDashboardGreeting();
+
+            setAiGreeting(
+              response?.data || {
+                greeting: "",
+                message: "",
+              },
+            );
+          } catch (error) {
+            console.error("Failed to load AI greeting:", error);
+
+            setAiGreeting({
+              greeting: `Welcome back, ${user?.name || "Creator"}! 👋`,
+              message: "Ready to create something amazing today?",
+            });
+          } finally {
+            setAiGreetingLoading(false);
+          }
+        };
+
+        if (!loading && user) {
+          loadAIGreeting();
+        }
+      }, [loading, user]);
     useEffect(() => {
       const loadAnalytics = async () => {
         try {
@@ -84,25 +121,42 @@ const stats = [
 
   return (
     <div className="space-y-6 sm:space-y-8">
-      {/* Welcome */}
+      {/* AI WELCOME */}
+
       <section className="rounded-2xl bg-linear-to-br from-purple-600 to-purple-700 p-6 sm:p-8 text-white">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <Sparkles size={20} />
-              <span className="text-sm font-medium text-purple-100">
-                CreatorFlow AI
-              </span>
+          <div className="max-w-2xl">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center">
+                <Bot size={19} />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Sparkles size={15} />
+
+                <span className="text-sm font-semibold text-purple-100">
+                  CreatorFlow AI
+                </span>
+              </div>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-bold">
-              Welcome back, {user?.name || "Creator"} 👋
-            </h1>
+            {aiGreetingLoading ? (
+              <>
+                <div className="h-8 w-72 bg-white/20 rounded-lg animate-pulse" />
 
-            <p className="mt-2 text-purple-100 max-w-xl">
-              Turn your ideas into engaging content and keep your social media
-              presence consistent.
-            </p>
+                <div className="h-5 w-full max-w-xl bg-white/10 rounded-lg mt-3 animate-pulse" />
+              </>
+            ) : (
+              <>
+                <h1 className="text-2xl sm:text-3xl font-bold">
+                  {aiGreeting.greeting}
+                </h1>
+
+                <p className="mt-2 text-purple-100 max-w-xl">
+                  {aiGreeting.message}
+                </p>
+              </>
+            )}
           </div>
 
           <Link
@@ -114,7 +168,13 @@ const stats = [
           </Link>
         </div>
       </section>
+      {/* AI INSIGHT */}
 
+      <AIDashboardInsight analytics={analytics} />
+
+      {/* Stats */}
+
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></section>
       {/* Stats */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat) => {
