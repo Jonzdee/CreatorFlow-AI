@@ -156,6 +156,12 @@ const CreateContent = () => {
    writingStyle: "",
  });
 
+ const handleChange = (e) => {
+   setFormData((prev) => ({
+     ...prev,
+     [e.target.name]: e.target.value,
+   }));
+ };
   useEffect(() => {
     const restoreDraft = async () => {
       try {
@@ -549,7 +555,105 @@ const CreateContent = () => {
           </div>
         )}
       </div>
+      {generatedContent && (
+        <section className="bg-white border border-gray-200 rounded-2xl p-5">
+          {/* Generated Content Header */}
+          <div className="flex items-center justify-between gap-3 mb-4">
+            <div className="flex items-center gap-2">
+              <Sparkles size={20} className="text-purple-600" />
+              <h2 className="font-bold text-gray-900">Generated Content</h2>
+            </div>
 
+            <span className="text-xs font-medium px-3 py-1 rounded-full bg-purple-50 text-purple-700">
+              {generatedContent.platform}
+            </span>
+          </div>
+
+          {/* Hook */}
+          {generatedContent.hook && (
+            <div className="mb-5">
+              <p className="text-xs font-semibold uppercase tracking-wide text-purple-600 mb-2">
+                Hook
+              </p>
+
+              <div className="rounded-xl bg-purple-50 border border-purple-100 p-4">
+                <p className="text-sm font-medium text-gray-800">
+                  {generatedContent.hook}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Main Content */}
+          {editing ? (
+            <textarea
+              value={generatedContent.content || ""}
+              onChange={(e) => handleContentChange(e.target.value)}
+              rows={12}
+              className="w-full rounded-xl border border-gray-200 p-4 outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100 resize-y"
+            />
+          ) : (
+            <div className="rounded-xl bg-gray-50 border border-gray-200 p-4">
+              <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
+                {generatedContent.content}
+              </p>
+            </div>
+          )}
+
+          {/* Caption */}
+          {generatedContent.caption && (
+            <div className="mt-5">
+              <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">
+                Caption
+              </p>
+
+              <div className="rounded-xl bg-gray-50 border border-gray-200 p-4">
+                <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                  {generatedContent.caption}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Hashtags */}
+          {Array.isArray(generatedContent.hashtags) &&
+            generatedContent.hashtags.length > 0 && (
+              <div className="mt-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">
+                  Hashtags
+                </p>
+
+                <div className="flex flex-wrap gap-2">
+                  {generatedContent.hashtags.map((tag, index) => (
+                    <span
+                      key={`${tag}-${index}`}
+                      className="px-3 py-1.5 rounded-full bg-purple-50 text-purple-700 text-xs font-medium"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+          {/* Call To Action */}
+          {generatedContent.callToAction && (
+            <div className="mt-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">
+                Call to Action
+              </p>
+
+              <div className="rounded-xl bg-green-50 border border-green-100 p-4">
+                <p className="text-sm text-gray-700">
+                  {generatedContent.callToAction}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* ...your existing action message, media and buttons... */}
+        </section>
+      )}
       <form onSubmit={handleGenerate} className="space-y-6">
         {/* Content Type */}
 
