@@ -13,29 +13,50 @@ export const generateContent = async (req, res) => {
             writingStyle,
         } = req.body;
 
-        if (!contentType || !platform || !topic || !writingStyle) {
+        if (
+            !contentType ||
+            !platform ||
+            !topic ||
+            !writingStyle
+        ) {
             return res.status(400).json({
                 success: false,
                 message: "All content fields are required.",
             });
         }
 
-        const generatedContent = await generateAIContent({
+        const generated = await generateAIContent({
             contentType,
             platform,
             topic,
             writingStyle,
         });
 
+        if (!generated?.content) {
+            return res.status(500).json({
+                success: false,
+                message: "AI failed to generate valid content.",
+            });
+        }
+
         const savedContent = await Content.create({
             user: req.user.id,
+
             contentType,
             platform,
             topic,
             writingStyle,
-            content: generatedContent,
+
+            title: generatedContent.title,
+            hook: generatedContent.hook,
+            content: generatedContent.content,
+            caption: generatedContent.caption,
+            hashtags: generatedContent.hashtags,
+            callToAction: generatedContent.callToAction,
+
+            status: "draft",
         });
-       
+
         await createNotification({
             user: req.user.id,
             title: "Content Created",
@@ -53,7 +74,8 @@ export const generateContent = async (req, res) => {
 
         return res.status(500).json({
             success: false,
-            message: "Failed to generate content.",
+            message:
+                error.message || "Failed to generate content.",
         });
     }
 };

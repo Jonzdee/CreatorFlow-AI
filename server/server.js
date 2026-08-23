@@ -8,6 +8,9 @@ import contentRoutes from "./routes/contentRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import ideaRoutes from "./routes/ideaRoutes.js";
 import mediaRoutes from "./routes/mediaRoutes.js";
+import aiRoutes from "./routes/aiRoutes.js";
+import assistantRoutes from "./routes/assistantRoutes.js";
+
 connectDB();
 
 const app = express();
@@ -33,6 +36,8 @@ app.use("/api/content", contentRoutes);
 app.use("/api/ideas", ideaRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/media", mediaRoutes);
+app.use("/api/ai", aiRoutes);
+app.use("/api/assistant", assistantRoutes);
 app.get("/", (req, res) => {
     res.send("🚀 CreatorFlow API Running");
 });

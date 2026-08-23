@@ -94,9 +94,39 @@ const contentSchema = new mongoose.Schema(
             trim: true,
         },
 
+        // AI generated fields
+        title: {
+            type: String,
+            default: "",
+            trim: true,
+        },
+
+        hook: {
+            type: String,
+            default: "",
+            trim: true,
+        },
+
         content: {
             type: String,
             required: true,
+        },
+
+        caption: {
+            type: String,
+            default: "",
+        },
+
+        hashtags: {
+            type: [String],
+            default: [],
+            
+        },
+
+        callToAction: {
+            type: String,
+            default: "",
+            trim: true,
         },
 
         media: {
