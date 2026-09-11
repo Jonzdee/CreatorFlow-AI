@@ -16,6 +16,10 @@ import Analytics from "./pages/Dashboard/Analytics";
 import Profile from "./pages/Dashboard/Profile";
 import Ideas from "./pages/Dashboard/Ideas";
 import Settings from "./pages/Dashboard/Settings";
+
+import Terms from "./pages/Legal/Terms";
+import Privacy from "./pages/Legal/Privacy";
+
 function App() {
   return (
     <Routes>
@@ -38,6 +42,11 @@ function App() {
       />
 
       <Route path="/onboarding-complete" element={<OnboardingComplete />} />
+
+
+{/* Legal */}
+<Route path="/terms" element={<Terms />} />
+<Route path="/privacy" element={<Privacy />} />
 
       {/* Dashboard */}
       <Route
