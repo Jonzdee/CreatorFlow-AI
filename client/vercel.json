@@ -1,7 +1,7 @@
 {
     "rewrites": [
         {
-            "source": "/(.*)",
+            "source": "/((?!tiktokhrS5BBWz2vcdiyAlx1RzNeEbmd44rG9H$).*)",
             "destination": "/index.html"
         }
     ]
