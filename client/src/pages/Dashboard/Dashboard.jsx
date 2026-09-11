@@ -148,7 +148,7 @@ const stats = [
               </>
             ) : (
               <>
-                <h1 className="text-2xl sm:text-3xl font-bold">
+                <h1 className="text-xl sm:text-3xl font-bold">
                   {aiGreeting.greeting}
                 </h1>
 
